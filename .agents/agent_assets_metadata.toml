@@ -1,8 +1,13 @@
 uploads = []
-outputs = []
 
 [[generated]]
 id = "z6u-lmjYOhRgFXy4frHag"
 uri = "file://attached_assets/generated_images/placex-logo.png"
 type = "image"
 title = "placex logo"
+
+[[outputs]]
+id = "1x7A3ZLhSbg9Lg4V3ivmm"
+uri = "file://attached_assets/generated_images/placex-logo.png"
+type = "image"
+title = "PlaceX Logo"
