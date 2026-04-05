@@ -1,5 +1,5 @@
 import { Router, type Request, type Response, type NextFunction, type IRouter } from "express";
-import { jobStore, type PortalJob } from "./portal-jobs";
+import { jobStore, saveStore, type PortalJob } from "./portal-jobs";
 
 const router: IRouter = Router();
 
@@ -50,6 +50,7 @@ router.post("/admin/jobs/:id/approve", (req, res) => {
   if (!job) { res.status(404).json({ error: "Job not found" }); return; }
   const updated: PortalJob = { ...job, isApproved: true, rejectionReason: undefined, updatedAt: new Date().toISOString() };
   jobStore.set(job.id, updated);
+  saveStore(jobStore);
   res.json({ success: true, job: updated });
 });
 
@@ -65,12 +66,14 @@ router.post("/admin/jobs/:id/reject", (req, res) => {
     updatedAt: new Date().toISOString(),
   };
   jobStore.set(job.id, updated);
+  saveStore(jobStore);
   res.json({ success: true, job: updated });
 });
 
 router.delete("/admin/jobs/:id", (req, res) => {
   if (!jobStore.has(req.params.id)) { res.status(404).json({ error: "Job not found" }); return; }
   jobStore.delete(req.params.id);
+  saveStore(jobStore);
   res.json({ success: true });
 });
 

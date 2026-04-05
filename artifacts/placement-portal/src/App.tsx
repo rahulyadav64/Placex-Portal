@@ -3,7 +3,7 @@ import { Switch, Route, Router as WouterRouter } from "wouter";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { loadPostedJobs, loadCompany } from "@/lib/employer-profile";
+import { loadPostedJobs, loadCompany, savePostedJobs, type PostedJob } from "@/lib/employer-profile";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/home";
 import About from "@/pages/about";
@@ -32,17 +32,36 @@ function useStartupJobSync() {
     const jobs = loadPostedJobs();
     const company = loadCompany();
     if (jobs.length === 0) return;
-    jobs.forEach(job => {
-      fetch("/api/jobs/submit", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...job,
-          companyName: company.name,
-          companyVerificationStatus: company.verificationStatus,
-          hrEmail: company.hrEmail,
-        }),
-      }).catch(() => {});
+
+    Promise.all(
+      jobs.map(async (job) => {
+        try {
+          const res = await fetch("/api/jobs/submit", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              ...job,
+              companyName: company.name,
+              companyVerificationStatus: company.verificationStatus,
+              hrEmail: company.hrEmail,
+            }),
+          });
+          if (!res.ok) return job;
+          const data = await res.json() as { job?: PostedJob };
+          if (!data.job) return job;
+          // Return the server version — it has the admin-updated isApproved / rejectionReason
+          return { ...job, isApproved: data.job.isApproved, status: data.job.status } as PostedJob;
+        } catch {
+          return job;
+        }
+      })
+    ).then((synced) => {
+      // Check if anything changed and persist back to localStorage
+      const changed = synced.some((s, i) => s.isApproved !== jobs[i].isApproved || s.status !== jobs[i].status);
+      if (changed) {
+        savePostedJobs(synced);
+        window.dispatchEvent(new CustomEvent("employer-jobs-synced"));
+      }
     });
   }, []);
 }

@@ -40,6 +40,15 @@ export function useEmployerProfile() {
     jobs.forEach(job => syncJobToServer(job, comp));
   }, []);
 
+  // Listen for approval status changes synced from the API server
+  useEffect(() => {
+    const onSynced = () => {
+      setPostedJobsState(loadPostedJobs());
+    };
+    window.addEventListener("employer-jobs-synced", onSynced);
+    return () => window.removeEventListener("employer-jobs-synced", onSynced);
+  }, []);
+
   const updateCompany = useCallback((updates: Partial<CompanyProfile>) => {
     setCompanyState(prev => {
       const next = { ...prev, ...updates, updatedAt: new Date().toISOString() };
