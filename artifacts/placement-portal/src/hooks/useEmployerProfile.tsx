@@ -72,8 +72,18 @@ export function useEmployerProfile() {
       savePostedJobs(next);
       return next;
     });
+    fetch("/api/jobs/submit", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        ...newJob,
+        companyName: company.name,
+        companyVerificationStatus: company.verificationStatus,
+        hrEmail: company.hrEmail,
+      }),
+    }).catch(() => {});
     return newJob;
-  }, [company.verificationStatus]);
+  }, [company.verificationStatus, company.name, company.hrEmail]);
 
   const updateJob = useCallback((id: string, updates: Partial<PostedJob>) => {
     setPostedJobsState(prev => {

@@ -14,12 +14,19 @@ import type { PostedJob } from "@/lib/employer-profile";
 
 type Category = "private" | "government" | "portal";
 
-function loadPortalJobs(): PostedJob[] {
+async function fetchPortalJobsFromAPI(): Promise<PostedJob[]> {
   try {
-    const raw = localStorage.getItem("employer_jobs_v1");
-    return raw ? (JSON.parse(raw) as PostedJob[]).filter(j => j.status === "Active") : [];
+    const res = await fetch("/api/jobs/portal");
+    if (!res.ok) throw new Error("fetch failed");
+    const data = await res.json() as { jobs: PostedJob[] };
+    return data.jobs || [];
   } catch {
-    return [];
+    try {
+      const raw = localStorage.getItem("employer_jobs_v1");
+      return raw ? (JSON.parse(raw) as PostedJob[]).filter(j => j.status === "Active") : [];
+    } catch {
+      return [];
+    }
   }
 }
 
@@ -88,7 +95,7 @@ export default function Jobs() {
 
   useEffect(() => {
     if (category === "portal") {
-      setPortalJobs(loadPortalJobs());
+      fetchPortalJobsFromAPI().then(jobs => setPortalJobs(jobs));
     }
   }, [category]);
 
@@ -229,7 +236,7 @@ export default function Jobs() {
                 </span>
               </button>
               <button
-                onClick={() => { setCategory("portal"); setLocationFilter("all"); setTypeFilter("all"); setPortalJobs(loadPortalJobs()); }}
+                onClick={() => { setCategory("portal"); setLocationFilter("all"); setTypeFilter("all"); fetchPortalJobsFromAPI().then(jobs => setPortalJobs(jobs)); }}
                 className={`flex items-center gap-2.5 px-6 py-3 rounded-xl text-sm font-semibold transition-all duration-250 ${
                   category === "portal"
                     ? "bg-violet-600 text-white shadow-md"
