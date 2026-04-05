@@ -44,8 +44,8 @@ export default function LoginPage({ onLogin }: Props) {
 
       <div className="w-full max-w-md relative z-10">
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-purple-500/15 rounded-2xl border border-purple-500/30 mb-4">
-            <Shield className="h-8 w-8 text-purple-400" />
+          <div className="inline-flex items-center justify-center w-20 h-20 mb-4">
+            <img src={`${import.meta.env.BASE_URL}logo.png`} alt="PlaceX" className="h-full w-full object-contain drop-shadow-lg" />
           </div>
           <h1 className="text-3xl font-bold text-white mb-1">
             PlaceX <span className="text-purple-400">Admin</span>

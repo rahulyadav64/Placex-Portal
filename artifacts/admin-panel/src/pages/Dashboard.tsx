@@ -194,9 +194,7 @@ export default function Dashboard({ adminKey, onLogout }: Props) {
       {/* Sidebar */}
       <aside className="admin-sidebar w-64 shrink-0 flex flex-col p-5 fixed inset-y-0 left-0 z-40">
         <div className="flex items-center gap-3 mb-8">
-          <div className="w-10 h-10 bg-purple-500/20 rounded-xl border border-purple-500/30 flex items-center justify-center">
-            <Shield className="h-5 w-5 text-purple-400" />
-          </div>
+          <img src={`${import.meta.env.BASE_URL}logo.png`} alt="PlaceX" className="h-10 w-10 object-contain" />
           <div>
             <h1 className="font-bold text-white text-sm">PlaceX Admin</h1>
             <p className="text-xs text-muted-foreground">Control Panel</p>

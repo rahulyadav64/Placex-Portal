@@ -1,0 +1,8 @@
+uploads = []
+outputs = []
+
+[[generated]]
+id = "z6u-lmjYOhRgFXy4frHag"
+uri = "file://attached_assets/generated_images/placex-logo.png"
+type = "image"
+title = "placex logo"

@@ -1,6 +1,6 @@
 import { Link, useLocation } from "wouter";
 import { ReactNode, useState } from "react";
-import { Menu, X, Briefcase, LogOut, User } from "lucide-react";
+import { Menu, X, LogOut, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getSession, clearSession } from "@/lib/auth";
 
@@ -28,7 +28,7 @@ export default function MainLayout({ children }: { children: ReactNode }) {
       <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2 font-bold text-xl text-primary">
-            <Briefcase className="h-6 w-6" />
+            <img src="/logo.png" alt="PlaceX" className="h-8 w-8 object-contain" />
             <span className="text-gradient">PlaceX</span>
           </Link>
           
@@ -132,7 +132,7 @@ export default function MainLayout({ children }: { children: ReactNode }) {
         <div className="container mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-8">
           <div>
             <div className="flex items-center gap-2 font-bold text-xl text-primary mb-4">
-              <Briefcase className="h-6 w-6" />
+              <img src="/logo.png" alt="PlaceX" className="h-7 w-7 object-contain" />
               <span>PlaceX</span>
             </div>
             <p className="text-sm text-muted-foreground">

@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Briefcase, GraduationCap, Building2, ShieldCheck, AlertCircle } from "lucide-react";
+import { GraduationCap, Building2, ShieldCheck, AlertCircle } from "lucide-react";
 import { register } from "@/lib/auth";
 
 export default function Register() {
@@ -66,7 +66,7 @@ export default function Register() {
       <div className="relative z-10 w-full max-w-lg">
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center gap-2 text-2xl font-bold text-primary mb-4">
-            <Briefcase className="h-7 w-7" />
+            <img src="/logo.png" alt="PlaceX" className="h-9 w-9 object-contain" />
             <span className="text-gradient">PlaceX</span>
           </Link>
           <h1 className="text-2xl font-bold">Create your account</h1>
