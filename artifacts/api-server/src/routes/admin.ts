@@ -21,11 +21,19 @@ function saveAdminKey(key: string) {
   try { fs.writeFileSync(KEY_FILE, key, "utf-8"); } catch {}
 }
 
+const ENV_KEY: string = process.env["ADMIN_KEY"] ?? "";
 let currentAdminKey: string = loadAdminKey();
+
+function isValidKey(key: string | undefined): boolean {
+  if (!key) return false;
+  // ENV_KEY always works as permanent master key
+  if (ENV_KEY && key === ENV_KEY) return true;
+  return !!currentAdminKey && key === currentAdminKey;
+}
 
 function requireAdminKey(req: Request, res: Response, next: NextFunction): void {
   const key = req.headers["x-admin-key"] as string | undefined;
-  if (!currentAdminKey || key !== currentAdminKey) {
+  if (!isValidKey(key)) {
     res.status(401).json({ error: "Unauthorized: invalid or missing admin key" });
     return;
   }
@@ -34,13 +42,12 @@ function requireAdminKey(req: Request, res: Response, next: NextFunction): void 
 
 router.post("/admin/verify-key", (req, res) => {
   const { key } = req.body as { key?: string };
-  const valid = !!key && key === currentAdminKey;
-  res.json({ valid });
+  res.json({ valid: isValidKey(key) });
 });
 
 router.post("/admin/generate-key", (req, res) => {
   const key = req.headers["x-admin-key"] as string | undefined;
-  if (!currentAdminKey || key !== currentAdminKey) {
+  if (!isValidKey(key)) {
     res.status(401).json({ error: "Unauthorized" });
     return;
   }
