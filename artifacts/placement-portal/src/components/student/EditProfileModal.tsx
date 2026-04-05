@@ -259,7 +259,7 @@ export default function EditProfileModal({ open, onClose, profile, onSave }: Pro
 
               <div className="space-y-2">
                 <Label>Certifications (click to add)</Label>
-                <div className="flex flex-wrap gap-2 p-3 border rounded-lg bg-muted/30">
+                <div className="flex flex-wrap gap-2 p-3 border rounded-lg bg-muted/30 max-h-36 overflow-y-auto">
                   {["AWS Cloud Practitioner", "Google Data Analytics", "Meta Frontend Developer",
                     "Microsoft Azure Fundamentals", "Python for Data Science (Coursera)",
                     "Full Stack Web Dev (Udemy)", "Oracle Java SE", "Cisco CCNA",
@@ -297,7 +297,7 @@ export default function EditProfileModal({ open, onClose, profile, onSave }: Pro
               <div className="space-y-2">
                 <Label className="text-base font-semibold">Technical Skills *</Label>
                 <p className="text-xs text-muted-foreground">Select all the technologies and tools you know</p>
-                <div className="flex flex-wrap gap-2 p-3 border rounded-lg bg-muted/30 max-h-48 overflow-y-auto">
+                <div className="flex flex-wrap gap-2 p-3 border rounded-lg bg-muted/30 max-h-72 overflow-y-auto">
                   {COMMON_SKILLS.map(skill => (
                     <button
                       key={skill}
@@ -319,7 +319,7 @@ export default function EditProfileModal({ open, onClose, profile, onSave }: Pro
 
               <div className="space-y-2">
                 <Label className="text-base font-semibold">Soft Skills</Label>
-                <div className="flex flex-wrap gap-2 p-3 border rounded-lg bg-muted/30">
+                <div className="flex flex-wrap gap-2 p-3 border rounded-lg bg-muted/30 max-h-40 overflow-y-auto">
                   {SOFT_SKILLS.map(skill => (
                     <button
                       key={skill}
@@ -367,7 +367,7 @@ export default function EditProfileModal({ open, onClose, profile, onSave }: Pro
                         <SelectTrigger className="h-9">
                           <SelectValue placeholder="Select language" />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent className="max-h-[260px] overflow-y-auto">
                           {COMMON_LANGUAGES.map(l => <SelectItem key={l} value={l}>{l}</SelectItem>)}
                           <SelectItem value="Other">Other</SelectItem>
                         </SelectContent>

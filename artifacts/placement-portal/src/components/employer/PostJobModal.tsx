@@ -259,7 +259,7 @@ export default function PostJobModal({ open, onClose, companyName, verificationS
           <div className="space-y-2">
             <Label>Required Skills * <span className="text-xs font-normal text-muted-foreground">(click to select)</span></Label>
             {errors.requiredSkills && <p className="text-xs text-red-500">{errors.requiredSkills}</p>}
-            <div className="flex flex-wrap gap-2 p-3 border rounded-lg bg-muted/30 max-h-40 overflow-y-auto">
+            <div className="flex flex-wrap gap-2 p-3 border rounded-lg bg-muted/30 max-h-72 overflow-y-auto">
               {COMMON_SKILLS.map(skill => (
                 <button
                   key={skill}
