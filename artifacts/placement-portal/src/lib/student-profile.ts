@@ -1,3 +1,5 @@
+import { currentUserKey } from "./auth";
+
 export type SkillLevel = "Beginner" | "Intermediate" | "Advanced" | "Expert";
 
 export interface ProgrammingLanguage {
@@ -58,8 +60,11 @@ export interface Application {
   source: string;
 }
 
-const PROFILE_KEY = "student_profile_v1";
-const APPLICATIONS_KEY = "student_applications_v1";
+const PROFILE_KEY_BASE = "student_profile_v1";
+const APPLICATIONS_KEY_BASE = "student_applications_v1";
+
+function profileKey() { return currentUserKey(PROFILE_KEY_BASE); }
+function applicationsKey() { return currentUserKey(APPLICATIONS_KEY_BASE); }
 
 export const DEFAULT_PROFILE: StudentProfile = {
   name: "",
@@ -88,7 +93,7 @@ export const DEFAULT_PROFILE: StudentProfile = {
 
 export function loadProfile(): StudentProfile {
   try {
-    const raw = localStorage.getItem(PROFILE_KEY);
+    const raw = localStorage.getItem(profileKey());
     if (!raw) return { ...DEFAULT_PROFILE };
     return { ...DEFAULT_PROFILE, ...JSON.parse(raw) };
   } catch {
@@ -98,12 +103,12 @@ export function loadProfile(): StudentProfile {
 
 export function saveProfile(profile: StudentProfile): void {
   const updated = { ...profile, updatedAt: new Date().toISOString() };
-  localStorage.setItem(PROFILE_KEY, JSON.stringify(updated));
+  localStorage.setItem(profileKey(), JSON.stringify(updated));
 }
 
 export function loadApplications(): Application[] {
   try {
-    const raw = localStorage.getItem(APPLICATIONS_KEY);
+    const raw = localStorage.getItem(applicationsKey());
     return raw ? JSON.parse(raw) : [];
   } catch {
     return [];
@@ -111,7 +116,7 @@ export function loadApplications(): Application[] {
 }
 
 export function saveApplications(apps: Application[]): void {
-  localStorage.setItem(APPLICATIONS_KEY, JSON.stringify(apps));
+  localStorage.setItem(applicationsKey(), JSON.stringify(apps));
 }
 
 export function computeMatchScore(profileSkills: string[], jobSkills: string[]): number {

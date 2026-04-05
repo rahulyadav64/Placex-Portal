@@ -1,9 +1,10 @@
 import { useEffect } from "react";
-import { Switch, Route, Router as WouterRouter } from "wouter";
+import { Switch, Route, Router as WouterRouter, Redirect } from "wouter";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { loadPostedJobs, loadCompany, savePostedJobs, type PostedJob } from "@/lib/employer-profile";
+import { getSession } from "@/lib/auth";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/home";
 import About from "@/pages/about";
@@ -85,8 +86,22 @@ function Router() {
         <Route path="/login" component={Login} />
         <Route path="/register" component={Register} />
         <Route path="/jobs" component={Jobs} />
-        <Route path="/dashboard/student" component={StudentDashboard} />
-        <Route path="/dashboard/employer" component={EmployerDashboard} />
+        <Route path="/dashboard/student">
+          {() => {
+            const s = getSession();
+            if (!s) return <Redirect to="/login" />;
+            if (s.role !== "student") return <Redirect to="/dashboard/employer" />;
+            return <StudentDashboard />;
+          }}
+        </Route>
+        <Route path="/dashboard/employer">
+          {() => {
+            const s = getSession();
+            if (!s) return <Redirect to="/login" />;
+            if (s.role !== "employer") return <Redirect to="/dashboard/student" />;
+            return <EmployerDashboard />;
+          }}
+        </Route>
         <Route path="/dashboard/admin" component={AdminDashboard} />
         <Route component={NotFound} />
       </Switch>

@@ -1,13 +1,61 @@
 import { useState } from "react";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Briefcase, GraduationCap, Building2, ShieldCheck } from "lucide-react";
+import { Briefcase, GraduationCap, Building2, ShieldCheck, AlertCircle } from "lucide-react";
+import { register } from "@/lib/auth";
 
 export default function Register() {
+  const [, navigate] = useLocation();
   const [role, setRole] = useState<"student" | "employer">("student");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [college, setCollege] = useState("");
+  const [course, setCourse] = useState("");
+  const [company, setCompany] = useState("");
+  const [designation, setDesignation] = useState("");
+  const [agreed, setAgreed] = useState(false);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setError("");
+
+    if (!firstName.trim()) { setError("Please enter your first name."); return; }
+    if (!lastName.trim()) { setError("Please enter your last name."); return; }
+    if (!email.trim()) { setError("Please enter your email address."); return; }
+    if (!password) { setError("Please create a password."); return; }
+    if (password.length < 6) { setError("Password must be at least 6 characters."); return; }
+    if (role === "student" && !college.trim()) { setError("Please enter your college name."); return; }
+    if (role === "employer" && !company.trim()) { setError("Please enter your company name."); return; }
+    if (!agreed) { setError("Please agree to the Terms of Service to continue."); return; }
+
+    setLoading(true);
+    const result = register({
+      email: email.trim(),
+      password,
+      role,
+      firstName: firstName.trim(),
+      lastName: lastName.trim(),
+      college: role === "student" ? college.trim() : undefined,
+      course: role === "student" ? course.trim() : undefined,
+      company: role === "employer" ? company.trim() : undefined,
+      designation: role === "employer" ? designation.trim() : undefined,
+    });
+    setLoading(false);
+
+    if ("error" in result) {
+      setError(result.error);
+      return;
+    }
+
+    navigate(role === "student" ? "/dashboard/student" : "/dashboard/employer");
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center py-16 px-4 relative overflow-hidden">
@@ -26,10 +74,10 @@ export default function Register() {
         </div>
 
         <div className="glass-card rounded-2xl p-8 shadow-xl">
-          {/* Role Selector */}
           <div className="flex gap-3 mb-6">
             <button
-              onClick={() => setRole("student")}
+              type="button"
+              onClick={() => { setRole("student"); setError(""); }}
               className={`flex-1 flex items-center gap-2 justify-center p-3 rounded-xl border-2 font-medium text-sm transition-all duration-200 ${
                 role === "student"
                   ? "border-primary bg-primary/10 text-primary"
@@ -41,7 +89,8 @@ export default function Register() {
               Student
             </button>
             <button
-              onClick={() => setRole("employer")}
+              type="button"
+              onClick={() => { setRole("employer"); setError(""); }}
               className={`flex-1 flex items-center gap-2 justify-center p-3 rounded-xl border-2 font-medium text-sm transition-all duration-200 ${
                 role === "employer"
                   ? "border-primary bg-primary/10 text-primary"
@@ -54,37 +103,44 @@ export default function Register() {
             </button>
           </div>
 
-          <div className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {error && (
+              <div className="flex items-start gap-2 p-3 rounded-lg bg-destructive/10 border border-destructive/20 text-destructive text-sm">
+                <AlertCircle className="h-4 w-4 mt-0.5 shrink-0" />
+                <span>{error}</span>
+              </div>
+            )}
+
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="fname">First Name</Label>
-                <Input id="fname" placeholder="Rahul" className="mt-1.5" data-testid="input-first-name" />
+                <Input id="fname" placeholder="Rahul" className="mt-1.5" value={firstName} onChange={e => setFirstName(e.target.value)} data-testid="input-first-name" />
               </div>
               <div>
                 <Label htmlFor="lname">Last Name</Label>
-                <Input id="lname" placeholder="Sharma" className="mt-1.5" data-testid="input-last-name" />
+                <Input id="lname" placeholder="Sharma" className="mt-1.5" value={lastName} onChange={e => setLastName(e.target.value)} data-testid="input-last-name" />
               </div>
             </div>
 
             <div>
               <Label htmlFor="email">Email Address</Label>
-              <Input id="email" type="email" placeholder="you@email.com" className="mt-1.5" data-testid="input-email" />
+              <Input id="email" type="email" placeholder="you@email.com" className="mt-1.5" value={email} onChange={e => setEmail(e.target.value)} data-testid="input-email" autoComplete="email" />
             </div>
 
             <div>
               <Label htmlFor="password">Password</Label>
-              <Input id="password" type="password" placeholder="Create a strong password" className="mt-1.5" data-testid="input-password" />
+              <Input id="password" type="password" placeholder="Create a strong password (min 6 chars)" className="mt-1.5" value={password} onChange={e => setPassword(e.target.value)} data-testid="input-password" autoComplete="new-password" />
             </div>
 
             {role === "student" && (
               <>
                 <div>
                   <Label htmlFor="college">College / University</Label>
-                  <Input id="college" placeholder="e.g. Delhi University" className="mt-1.5" data-testid="input-college" />
+                  <Input id="college" placeholder="e.g. Delhi University" className="mt-1.5" value={college} onChange={e => setCollege(e.target.value)} data-testid="input-college" />
                 </div>
                 <div>
                   <Label htmlFor="course">Course / Degree</Label>
-                  <Input id="course" placeholder="e.g. BCA, B.Tech" className="mt-1.5" data-testid="input-course" />
+                  <Input id="course" placeholder="e.g. BCA, B.Tech" className="mt-1.5" value={course} onChange={e => setCourse(e.target.value)} data-testid="input-course" />
                 </div>
               </>
             )}
@@ -93,17 +149,23 @@ export default function Register() {
               <>
                 <div>
                   <Label htmlFor="company">Company Name</Label>
-                  <Input id="company" placeholder="e.g. TechNova Solutions" className="mt-1.5" data-testid="input-company" />
+                  <Input id="company" placeholder="e.g. TechNova Solutions" className="mt-1.5" value={company} onChange={e => setCompany(e.target.value)} data-testid="input-company" />
                 </div>
                 <div>
                   <Label htmlFor="designation">Designation</Label>
-                  <Input id="designation" placeholder="e.g. HR Manager" className="mt-1.5" data-testid="input-designation" />
+                  <Input id="designation" placeholder="e.g. HR Manager" className="mt-1.5" value={designation} onChange={e => setDesignation(e.target.value)} data-testid="input-designation" />
                 </div>
               </>
             )}
 
             <div className="flex items-start gap-2">
-              <Checkbox id="terms" className="mt-0.5" data-testid="checkbox-terms" />
+              <Checkbox
+                id="terms"
+                className="mt-0.5"
+                checked={agreed}
+                onCheckedChange={(v) => setAgreed(!!v)}
+                data-testid="checkbox-terms"
+              />
               <Label htmlFor="terms" className="text-sm font-normal cursor-pointer leading-relaxed">
                 I agree to the{" "}
                 <a href="#" className="text-primary hover:underline">Terms of Service</a>{" "}
@@ -112,12 +174,15 @@ export default function Register() {
               </Label>
             </div>
 
-            <Link href={role === "student" ? "/dashboard/student" : "/dashboard/employer"}>
-              <Button className="w-full" data-testid="btn-register-submit">
-                Create {role === "student" ? "Student" : "Employer"} Account
-              </Button>
-            </Link>
-          </div>
+            <Button
+              type="submit"
+              className="w-full"
+              disabled={loading}
+              data-testid="btn-register-submit"
+            >
+              {loading ? "Creating account..." : `Create ${role === "student" ? "Student" : "Employer"} Account`}
+            </Button>
+          </form>
 
           <p className="text-center text-sm text-muted-foreground mt-6">
             Already have an account?{" "}

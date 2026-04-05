@@ -1,16 +1,42 @@
 import { useState } from "react";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Briefcase, GraduationCap, Building2, Eye, EyeOff, ShieldCheck } from "lucide-react";
+import { Briefcase, GraduationCap, Building2, Eye, EyeOff, ShieldCheck, AlertCircle } from "lucide-react";
+import { login } from "@/lib/auth";
 
 export default function Login() {
+  const [, navigate] = useLocation();
   const [role, setRole] = useState<"student" | "employer">("student");
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setError("");
+    if (!email.trim()) { setError("Please enter your email address."); return; }
+    if (!password) { setError("Please enter your password."); return; }
+
+    setLoading(true);
+    const result = login(email.trim(), password);
+    setLoading(false);
+
+    if ("error" in result) {
+      setError(result.error);
+      return;
+    }
+
+    if (result.session.role !== role) {
+      setError(`This account is registered as a ${result.session.role}. Please select the correct role.`);
+      return;
+    }
+
+    navigate(role === "student" ? "/dashboard/student" : "/dashboard/employer");
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center py-16 px-4 relative overflow-hidden">
@@ -29,10 +55,10 @@ export default function Login() {
         </div>
 
         <div className="glass-card rounded-2xl p-8 shadow-xl">
-          {/* Role Selector */}
           <div className="flex gap-3 mb-6">
             <button
-              onClick={() => setRole("student")}
+              type="button"
+              onClick={() => { setRole("student"); setError(""); }}
               className={`flex-1 flex items-center gap-2 justify-center p-3 rounded-xl border-2 font-medium text-sm transition-all duration-200 ${
                 role === "student"
                   ? "border-primary bg-primary/10 text-primary"
@@ -44,7 +70,8 @@ export default function Login() {
               Student
             </button>
             <button
-              onClick={() => setRole("employer")}
+              type="button"
+              onClick={() => { setRole("employer"); setError(""); }}
               className={`flex-1 flex items-center gap-2 justify-center p-3 rounded-xl border-2 font-medium text-sm transition-all duration-200 ${
                 role === "employer"
                   ? "border-primary bg-primary/10 text-primary"
@@ -57,7 +84,14 @@ export default function Login() {
             </button>
           </div>
 
-          <div className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {error && (
+              <div className="flex items-start gap-2 p-3 rounded-lg bg-destructive/10 border border-destructive/20 text-destructive text-sm">
+                <AlertCircle className="h-4 w-4 mt-0.5 shrink-0" />
+                <span>{error}</span>
+              </div>
+            )}
+
             <div>
               <Label htmlFor="email">Email Address</Label>
               <Input
@@ -68,6 +102,7 @@ export default function Login() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 data-testid="input-email"
+                autoComplete="email"
               />
             </div>
 
@@ -81,6 +116,7 @@ export default function Login() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   data-testid="input-password"
+                  autoComplete="current-password"
                 />
                 <button
                   type="button"
@@ -93,20 +129,15 @@ export default function Login() {
               </div>
             </div>
 
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Checkbox id="remember" data-testid="checkbox-remember" />
-                <Label htmlFor="remember" className="text-sm font-normal cursor-pointer">Remember me</Label>
-              </div>
-              <a href="#" className="text-sm text-primary hover:underline">Forgot password?</a>
-            </div>
-
-            <Link href={role === "student" ? "/dashboard/student" : "/dashboard/employer"}>
-              <Button className="w-full mt-2" data-testid="btn-login-submit">
-                Sign In as {role === "student" ? "Student" : "Employer"}
-              </Button>
-            </Link>
-          </div>
+            <Button
+              type="submit"
+              className="w-full mt-2"
+              disabled={loading}
+              data-testid="btn-login-submit"
+            >
+              {loading ? "Signing in..." : `Sign In as ${role === "student" ? "Student" : "Employer"}`}
+            </Button>
+          </form>
 
           <p className="text-center text-sm text-muted-foreground mt-6">
             Don't have an account?{" "}

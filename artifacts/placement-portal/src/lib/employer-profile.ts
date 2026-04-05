@@ -1,3 +1,5 @@
+import { currentUserKey } from "./auth";
+
 export type VerificationStatus = "unverified" | "pending" | "verified" | "rejected";
 
 export interface CompanyProfile {
@@ -48,8 +50,11 @@ export interface VerificationResult {
   companyType?: string;
 }
 
-const COMPANY_KEY = "employer_company_v1";
-const JOBS_KEY = "employer_jobs_v1";
+const COMPANY_KEY_BASE = "employer_company_v1";
+const JOBS_KEY_BASE = "employer_jobs_v1";
+
+function companyKey() { return currentUserKey(COMPANY_KEY_BASE); }
+function jobsKey() { return currentUserKey(JOBS_KEY_BASE); }
 
 export const DEFAULT_COMPANY: CompanyProfile = {
   name: "",
@@ -75,7 +80,7 @@ export const DEFAULT_COMPANY: CompanyProfile = {
 
 export function loadCompany(): CompanyProfile {
   try {
-    const raw = localStorage.getItem(COMPANY_KEY);
+    const raw = localStorage.getItem(companyKey());
     if (!raw) return { ...DEFAULT_COMPANY };
     return { ...DEFAULT_COMPANY, ...JSON.parse(raw) };
   } catch {
@@ -84,12 +89,12 @@ export function loadCompany(): CompanyProfile {
 }
 
 export function saveCompany(c: CompanyProfile): void {
-  localStorage.setItem(COMPANY_KEY, JSON.stringify({ ...c, updatedAt: new Date().toISOString() }));
+  localStorage.setItem(companyKey(), JSON.stringify({ ...c, updatedAt: new Date().toISOString() }));
 }
 
 export function loadPostedJobs(): PostedJob[] {
   try {
-    const raw = localStorage.getItem(JOBS_KEY);
+    const raw = localStorage.getItem(jobsKey());
     return raw ? JSON.parse(raw) : [];
   } catch {
     return [];
@@ -97,7 +102,7 @@ export function loadPostedJobs(): PostedJob[] {
 }
 
 export function savePostedJobs(jobs: PostedJob[]): void {
-  localStorage.setItem(JOBS_KEY, JSON.stringify(jobs));
+  localStorage.setItem(jobsKey(), JSON.stringify(jobs));
 }
 
 export function validateCIN(cin: string): { valid: boolean; reason?: string; parsed?: Record<string, string> } {

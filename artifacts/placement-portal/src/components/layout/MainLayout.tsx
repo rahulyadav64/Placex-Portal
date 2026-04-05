@@ -1,11 +1,19 @@
 import { Link, useLocation } from "wouter";
 import { ReactNode, useState } from "react";
-import { Menu, X, Briefcase } from "lucide-react";
+import { Menu, X, Briefcase, LogOut, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { getSession, clearSession } from "@/lib/auth";
 
 export default function MainLayout({ children }: { children: ReactNode }) {
-  const [location] = useLocation();
+  const [location, navigate] = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const session = getSession();
+
+  function handleLogout() {
+    clearSession();
+    navigate("/login");
+  }
 
   const navLinks = [
     { label: "Home", path: "/" },
@@ -36,13 +44,30 @@ export default function MainLayout({ children }: { children: ReactNode }) {
             ))}
           </nav>
 
-          <div className="hidden md:flex items-center gap-4">
-            <Link href="/login">
-              <Button variant="ghost" size="sm">Login</Button>
-            </Link>
-            <Link href="/register">
-              <Button size="sm">Register</Button>
-            </Link>
+          <div className="hidden md:flex items-center gap-3">
+            {session ? (
+              <>
+                <Link href={session.role === "student" ? "/dashboard/student" : "/dashboard/employer"}>
+                  <Button variant="ghost" size="sm" className="gap-2">
+                    <User className="h-4 w-4" />
+                    <span className="max-w-[120px] truncate">{session.firstName} {session.lastName}</span>
+                  </Button>
+                </Link>
+                <Button variant="outline" size="sm" onClick={handleLogout} className="gap-2" data-testid="btn-logout">
+                  <LogOut className="h-4 w-4" />
+                  Logout
+                </Button>
+              </>
+            ) : (
+              <>
+                <Link href="/login">
+                  <Button variant="ghost" size="sm">Login</Button>
+                </Link>
+                <Link href="/register">
+                  <Button size="sm">Register</Button>
+                </Link>
+              </>
+            )}
           </div>
 
           <button 
@@ -66,12 +91,34 @@ export default function MainLayout({ children }: { children: ReactNode }) {
               </Link>
             ))}
             <div className="flex flex-col gap-2 pt-4 border-t">
-              <Link href="/login">
-                <Button variant="outline" className="w-full justify-start" onClick={() => setMobileMenuOpen(false)}>Login</Button>
-              </Link>
-              <Link href="/register">
-                <Button className="w-full justify-start" onClick={() => setMobileMenuOpen(false)}>Register</Button>
-              </Link>
+              {session ? (
+                <>
+                  <Link href={session.role === "student" ? "/dashboard/student" : "/dashboard/employer"}>
+                    <Button variant="outline" className="w-full justify-start gap-2" onClick={() => setMobileMenuOpen(false)}>
+                      <User className="h-4 w-4" />
+                      {session.firstName} {session.lastName}
+                    </Button>
+                  </Link>
+                  <Button
+                    variant="ghost"
+                    className="w-full justify-start gap-2 text-destructive hover:text-destructive"
+                    onClick={() => { setMobileMenuOpen(false); handleLogout(); }}
+                    data-testid="btn-logout-mobile"
+                  >
+                    <LogOut className="h-4 w-4" />
+                    Logout
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Link href="/login">
+                    <Button variant="outline" className="w-full justify-start" onClick={() => setMobileMenuOpen(false)}>Login</Button>
+                  </Link>
+                  <Link href="/register">
+                    <Button className="w-full justify-start" onClick={() => setMobileMenuOpen(false)}>Register</Button>
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         )}
