@@ -584,6 +584,19 @@ export default function Jobs() {
                                   <ShieldCheck className="h-3 w-3" /> Approved Job
                                 </span>
                               ) : (
+                                <span className="flex items-center gap-1 text-xs px-2.5 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-200">
+                                  <Clock className="h-3 w-3" /> Under Review
+                                </span>
+                              )}
+                              {job.companyVerificationStatus === "verified" ? (
+                                <span className="flex items-center gap-1 text-xs px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 border border-blue-200">
+                                  <ShieldCheck className="h-3 w-3" /> Verified
+                                </span>
+                              ) : job.companyVerificationStatus === "pending" ? (
+                                <span className="flex items-center gap-1 text-xs px-2.5 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-200">
+                                  <Clock className="h-3 w-3" /> Pending Verification
+                                </span>
+                              ) : (
                                 <span className="flex items-center gap-1 text-xs px-2.5 py-1 rounded-full bg-orange-100 text-orange-700 border border-orange-300">
                                   <AlertCircle className="h-3 w-3" /> Unverified
                                 </span>
