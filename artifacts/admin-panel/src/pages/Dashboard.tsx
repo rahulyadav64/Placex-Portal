@@ -2,8 +2,8 @@ import { useState, useEffect, useCallback } from "react";
 import {
   Shield, Briefcase, CheckCircle2, Clock, XCircle, Trash2,
   RefreshCw, LogOut, MapPin, Users, Calendar, ChevronDown, ChevronUp,
-  ShieldCheck, AlertCircle, Building2, Star, Search, Filter,
-  TrendingUp, Eye, MessageSquare, X
+  ShieldCheck, AlertCircle, Building2, Star, Search,
+  Eye, X, KeyRound, Copy, Check, RotateCcw
 } from "lucide-react";
 
 interface PortalJob {
@@ -93,6 +93,10 @@ export default function Dashboard({ adminKey, onLogout }: Props) {
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [rejectingJob, setRejectingJob] = useState<PortalJob | null>(null);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
+  const [showKeyModal, setShowKeyModal] = useState(false);
+  const [generatedKey, setGeneratedKey] = useState<string | null>(null);
+  const [generating, setGenerating] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   const authHeaders = { "x-admin-key": adminKey, "Content-Type": "application/json" };
 
@@ -112,6 +116,31 @@ export default function Dashboard({ adminKey, onLogout }: Props) {
   }, [adminKey]);
 
   useEffect(() => { fetchJobs(); }, [fetchJobs]);
+
+  const generateKey = async () => {
+    setGenerating(true);
+    try {
+      const res = await fetch("/api/admin/generate-key", {
+        method: "POST",
+        headers: authHeaders,
+      });
+      const data = await res.json() as { newKey?: string; error?: string };
+      if (data.newKey) {
+        setGeneratedKey(data.newKey);
+        sessionStorage.setItem("placex_admin_key", data.newKey);
+      }
+    } finally {
+      setGenerating(false);
+    }
+  };
+
+  const copyKey = () => {
+    if (generatedKey) {
+      navigator.clipboard.writeText(generatedKey);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
 
   const approveJob = async (id: string) => {
     setActionLoading(id + "_approve");
@@ -205,12 +234,20 @@ export default function Dashboard({ adminKey, onLogout }: Props) {
           ))}
         </nav>
 
-        <button
-          onClick={onLogout}
-          className="flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm text-muted-foreground hover:text-red-400 hover:bg-red-500/10 transition-colors"
-        >
-          <LogOut className="h-4 w-4" /> Sign Out
-        </button>
+        <div className="space-y-1 mb-2">
+          <button
+            onClick={() => { setShowKeyModal(true); setGeneratedKey(null); setCopied(false); }}
+            className="w-full flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm text-muted-foreground hover:text-purple-400 hover:bg-purple-500/10 transition-colors"
+          >
+            <KeyRound className="h-4 w-4" /> Generate New Key
+          </button>
+          <button
+            onClick={onLogout}
+            className="w-full flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm text-muted-foreground hover:text-red-400 hover:bg-red-500/10 transition-colors"
+          >
+            <LogOut className="h-4 w-4" /> Sign Out
+          </button>
+        </div>
       </aside>
 
       {/* Main */}
@@ -413,6 +450,63 @@ export default function Dashboard({ adminKey, onLogout }: Props) {
           onConfirm={(reason) => rejectJob(rejectingJob.id, reason)}
           onClose={() => setRejectingJob(null)}
         />
+      )}
+
+      {showKeyModal && (
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="glass-card rounded-2xl p-6 w-full max-w-md border border-border">
+            <div className="flex items-center justify-between mb-5">
+              <div className="flex items-center gap-2">
+                <KeyRound className="h-5 w-5 text-purple-400" />
+                <h3 className="font-bold text-lg text-white">Generate New Admin Key</h3>
+              </div>
+              <button onClick={() => setShowKeyModal(false)} className="text-muted-foreground hover:text-foreground">
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            {!generatedKey ? (
+              <>
+                <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 text-sm text-amber-400 mb-5">
+                  <p className="font-semibold mb-1 flex items-center gap-1.5"><AlertCircle className="h-4 w-4" /> Warning</p>
+                  <p>Generating a new key will immediately invalidate the current key. You will need to use the new key for all future logins.</p>
+                </div>
+                <button
+                  onClick={generateKey}
+                  disabled={generating}
+                  className="w-full flex items-center justify-center gap-2 py-3 bg-purple-600 hover:bg-purple-700 disabled:opacity-50 text-white rounded-xl font-semibold transition-colors"
+                >
+                  {generating ? (
+                    <><RefreshCw className="h-4 w-4 animate-spin" /> Generating...</>
+                  ) : (
+                    <><RotateCcw className="h-4 w-4" /> Generate New Key</>
+                  )}
+                </button>
+              </>
+            ) : (
+              <>
+                <p className="text-sm text-muted-foreground mb-3">Your new admin key has been generated. Save it securely — it won't be shown again.</p>
+                <div className="flex items-center gap-2 p-3 rounded-xl bg-green-500/10 border border-green-500/30 mb-4">
+                  <code className="flex-1 text-green-400 font-mono text-sm break-all">{generatedKey}</code>
+                  <button
+                    onClick={copyKey}
+                    className="shrink-0 p-2 rounded-lg hover:bg-green-500/20 text-green-400 transition-colors"
+                    title="Copy to clipboard"
+                  >
+                    {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+                  </button>
+                </div>
+                <p className="text-xs text-muted-foreground mb-4">Your session has been updated automatically with the new key.</p>
+                <button
+                  onClick={() => setShowKeyModal(false)}
+                  className="w-full py-2.5 rounded-xl bg-muted hover:bg-muted/80 text-foreground text-sm font-medium transition-colors"
+                >
+                  Done
+                </button>
+              </>
+            )}
+          </div>
+        </div>
       )}
     </div>
   );

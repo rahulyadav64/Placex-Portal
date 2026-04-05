@@ -3,15 +3,35 @@ import { jobStore, type PortalJob } from "./portal-jobs";
 
 const router: IRouter = Router();
 
+let currentAdminKey: string = process.env["ADMIN_KEY"] ?? "";
+
 function requireAdminKey(req: Request, res: Response, next: NextFunction): void {
   const key = req.headers["x-admin-key"] as string | undefined;
-  const validKey = process.env["ADMIN_KEY"];
-  if (!validKey || key !== validKey) {
+  if (!currentAdminKey || key !== currentAdminKey) {
     res.status(401).json({ error: "Unauthorized: invalid or missing admin key" });
     return;
   }
   next();
 }
+
+router.post("/admin/verify-key", (req, res) => {
+  const { key } = req.body as { key?: string };
+  const valid = !!key && key === currentAdminKey;
+  res.json({ valid });
+});
+
+router.post("/admin/generate-key", (req, res) => {
+  const key = req.headers["x-admin-key"] as string | undefined;
+  if (!currentAdminKey || key !== currentAdminKey) {
+    res.status(401).json({ error: "Unauthorized" });
+    return;
+  }
+  const chars = "ABCDEFGHIJKLMNPQRSTUVWXYZ23456789";
+  const segment = (len: number) => Array.from({ length: len }, () => chars[Math.floor(Math.random() * chars.length)]).join("");
+  const newKey = `PLACEX-ADMIN-${segment(4)}-${segment(4)}-${segment(4)}`;
+  currentAdminKey = newKey;
+  res.json({ newKey });
+});
 
 router.use("/admin", requireAdminKey);
 
@@ -52,12 +72,6 @@ router.delete("/admin/jobs/:id", (req, res) => {
   if (!jobStore.has(req.params.id)) { res.status(404).json({ error: "Job not found" }); return; }
   jobStore.delete(req.params.id);
   res.json({ success: true });
-});
-
-router.post("/admin/verify-key", (req, res) => {
-  const { key } = req.body as { key?: string };
-  const valid = key === process.env["ADMIN_KEY"];
-  res.json({ valid });
 });
 
 export default router;
