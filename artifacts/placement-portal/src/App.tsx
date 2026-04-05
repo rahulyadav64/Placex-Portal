@@ -1,9 +1,10 @@
+import { useEffect } from "react";
 import { Switch, Route, Router as WouterRouter } from "wouter";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { loadPostedJobs, loadCompany } from "@/lib/employer-profile";
 import NotFound from "@/pages/not-found";
-
 import Home from "@/pages/home";
 import About from "@/pages/about";
 import Architecture from "@/pages/architecture";
@@ -22,10 +23,29 @@ import Jobs from "@/pages/jobs";
 import StudentDashboard from "@/pages/dashboard/student";
 import EmployerDashboard from "@/pages/dashboard/employer";
 import AdminDashboard from "@/pages/dashboard/admin";
-
 import MainLayout from "@/components/layout/MainLayout";
 
 const queryClient = new QueryClient();
+
+function useStartupJobSync() {
+  useEffect(() => {
+    const jobs = loadPostedJobs();
+    const company = loadCompany();
+    if (jobs.length === 0) return;
+    jobs.forEach(job => {
+      fetch("/api/jobs/submit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...job,
+          companyName: company.name,
+          companyVerificationStatus: company.verificationStatus,
+          hrEmail: company.hrEmail,
+        }),
+      }).catch(() => {});
+    });
+  }, []);
+}
 
 function Router() {
   return (
@@ -56,6 +76,7 @@ function Router() {
 }
 
 function App() {
+  useStartupJobSync();
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>

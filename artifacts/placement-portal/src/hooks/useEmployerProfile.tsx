@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import {
   type CompanyProfile,
   type PostedJob,
@@ -9,11 +9,36 @@ import {
   savePostedJobs,
 } from "@/lib/employer-profile";
 
+async function syncJobToServer(job: PostedJob, company: CompanyProfile) {
+  try {
+    await fetch("/api/jobs/submit", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        ...job,
+        companyName: company.name,
+        companyVerificationStatus: company.verificationStatus,
+        hrEmail: company.hrEmail,
+      }),
+    });
+  } catch {
+    // silently ignore — server might be unavailable
+  }
+}
+
 export function useEmployerProfile() {
   const [company, setCompanyState] = useState<CompanyProfile>(loadCompany);
   const [postedJobs, setPostedJobsState] = useState<PostedJob[]>(loadPostedJobs);
   const [verifying, setVerifying] = useState(false);
   const [verificationResult, setVerificationResult] = useState<VerificationResult | null>(null);
+
+  // Sync all local jobs to the API server on mount (handles server restarts & first load)
+  useEffect(() => {
+    const jobs = loadPostedJobs();
+    const comp = loadCompany();
+    if (jobs.length === 0) return;
+    jobs.forEach(job => syncJobToServer(job, comp));
+  }, []);
 
   const updateCompany = useCallback((updates: Partial<CompanyProfile>) => {
     setCompanyState(prev => {
