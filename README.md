@@ -8,10 +8,9 @@
 | **Project Title** | PlaceX — Online Placement Portal |
 | **Course** | Bachelor of Computer Applications (BCA) |
 | **Year** | Final Year (2025–2026) |
-| **Submitted By** | [Student Name] |
-| **Roll Number** | [Roll Number] |
-| **College** | [College Name] |
-| **Supervisor** | [Supervisor Name] |
+| **Submitted By** | [Dedraj] |
+| **Roll Number** | [23BCA10029] |
+| **College** | [Chandigarh University] |
 | **Date of Submission** | April 2026 |
 
 ---
