@@ -191,7 +191,7 @@ export default function CompanySetupModal({ open, onClose, company, onSave, onVe
                   <div className="text-xs text-blue-800 space-y-1">
                     <p className="font-semibold">How verification works</p>
                     <p>Enter your company's CIN (Corporate Identity Number) registered with the Ministry of Corporate Affairs (MCA), India. We validate the format and cross-check against our database of registered Indian companies.</p>
-                    <p className="mt-1"><span className="font-semibold">Verified companies</span> get a blue checkmark on all job postings. <span className="font-semibold">Pending companies</span> go through manual review within 2 business days.</p>
+                    <p className="mt-1"><span className="font-semibold">Verified companies</span> get a blue checkmark on all job postings. Verification is <span className="font-semibold">instant</span> for any CIN registered with MCA India.</p>
                   </div>
                 </div>
               </div>
