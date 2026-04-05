@@ -12,24 +12,66 @@ import type { StudentProfile, ProgrammingLanguage, SkillLevel, Internship, Proje
 const SKILL_LEVELS: SkillLevel[] = ["Beginner", "Intermediate", "Advanced", "Expert"];
 
 const COMMON_LANGUAGES = [
-  "C", "C++", "Java", "Python", "JavaScript", "TypeScript",
+  "C", "C++", "C#", "Java", "Python", "JavaScript", "TypeScript",
   "PHP", "Ruby", "Go", "Rust", "Kotlin", "Swift", "R", "MATLAB",
-  "SQL", "Dart", "Scala", "Shell/Bash",
+  "SQL", "Dart", "Scala", "Perl", "Haskell", "Elixir", "Erlang",
+  "Lua", "Julia", "Assembly", "COBOL", "Fortran", "Groovy",
+  "Shell/Bash", "PowerShell", "Visual Basic", "Objective-C",
+  "F#", "Clojure", "Prolog", "Solidity", "VHDL", "Verilog",
 ];
 
 const COMMON_SKILLS = [
-  "React", "Node.js", "Express.js", "Django", "Flask", "Spring Boot",
-  "Angular", "Vue.js", "Next.js", "REST API", "GraphQL", "MongoDB",
-  "PostgreSQL", "MySQL", "Redis", "Docker", "Kubernetes", "AWS", "Azure",
-  "GCP", "Git", "Linux", "Machine Learning", "Deep Learning", "NLP",
-  "Data Analysis", "TensorFlow", "PyTorch", "Figma", "Tailwind CSS",
-  "Bootstrap", "Android Development", "Flutter", "Firebase",
+  // Frontend
+  "React", "Angular", "Vue.js", "Next.js", "Nuxt.js", "Svelte",
+  "HTML5", "CSS3", "Tailwind CSS", "Bootstrap", "Material UI",
+  "Ant Design", "Chakra UI", "SASS/SCSS", "jQuery", "Redux",
+  "Zustand", "GraphQL", "REST API", "WebSocket", "Webpack", "Vite",
+  // Backend
+  "Node.js", "Express.js", "Django", "Flask", "FastAPI",
+  "Spring Boot", "Laravel", "Ruby on Rails", "ASP.NET", "NestJS",
+  "Hapi.js", "Koa.js", "Gin", "Fiber", "Echo", "Symfony",
+  // Mobile
+  "Android Development", "iOS Development", "Flutter", "React Native",
+  "Ionic", "Xamarin", "Kotlin Multiplatform", "SwiftUI",
+  // Database
+  "MongoDB", "PostgreSQL", "MySQL", "SQLite", "Redis", "Cassandra",
+  "Oracle DB", "MS SQL Server", "Firebase", "DynamoDB", "Elasticsearch",
+  "Neo4j", "CouchDB", "MariaDB", "Supabase", "PlanetScale",
+  // Cloud & DevOps
+  "AWS", "Azure", "GCP", "Docker", "Kubernetes", "Terraform",
+  "Ansible", "Jenkins", "GitHub Actions", "GitLab CI/CD",
+  "CircleCI", "Nginx", "Apache", "Linux", "Shell Scripting",
+  "Prometheus", "Grafana", "Helm", "Istio",
+  // AI / ML / Data
+  "Machine Learning", "Deep Learning", "NLP", "Computer Vision",
+  "TensorFlow", "PyTorch", "Keras", "Scikit-learn", "OpenCV",
+  "Pandas", "NumPy", "Matplotlib", "Seaborn", "Hugging Face",
+  "Data Analysis", "Data Science", "LangChain", "OpenAI API",
+  "Spark", "Hadoop", "Power BI", "Tableau",
+  // Version Control & Tools
+  "Git", "GitHub", "GitLab", "Bitbucket", "Jira", "Confluence",
+  "Figma", "Adobe XD", "Postman", "Swagger", "Vim", "VS Code",
+  // Security & Networking
+  "Cybersecurity", "Ethical Hacking", "Penetration Testing",
+  "Network Security", "OAuth", "JWT", "SSL/TLS", "Burp Suite",
+  "Wireshark", "OWASP",
+  // Testing
+  "Unit Testing", "Jest", "Selenium", "Cypress", "Playwright",
+  "JUnit", "Mocha", "Pytest", "Postman Testing",
+  // Blockchain
+  "Solidity", "Web3.js", "Ethereum", "Blockchain Development",
+  "Smart Contracts", "IPFS",
+  // Other
+  "Microservices", "Serverless", "WebRTC", "gRPC", "RabbitMQ",
+  "Apache Kafka", "IoT", "Raspberry Pi", "Arduino",
 ];
 
 const SOFT_SKILLS = [
   "Communication", "Teamwork", "Problem Solving", "Leadership",
   "Time Management", "Critical Thinking", "Adaptability",
   "Creativity", "Attention to Detail", "Project Management",
+  "Conflict Resolution", "Emotional Intelligence", "Negotiation",
+  "Public Speaking", "Decision Making", "Mentoring", "Work Ethic",
 ];
 
 const COURSES = ["BCA", "BCS", "B.Tech CS", "B.Tech IT", "B.Sc CS", "B.Sc IT", "MCA", "M.Tech", "MBA IT", "Other"];

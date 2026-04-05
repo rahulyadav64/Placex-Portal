@@ -11,11 +11,43 @@ import type { PostedJob } from "@/lib/employer-profile";
 import type { VerificationStatus } from "@/lib/employer-profile";
 
 const COMMON_SKILLS = [
-  "JavaScript", "TypeScript", "React", "Angular", "Vue.js", "Node.js",
-  "Python", "Java", "Go", "C++", "C#", ".NET", "Spring Boot", "Django",
-  "SQL", "MongoDB", "PostgreSQL", "Redis", "AWS", "Azure", "GCP",
-  "Docker", "Kubernetes", "Git", "REST API", "GraphQL", "Machine Learning",
-  "Data Science", "TensorFlow", "Figma", "Flutter", "Kotlin", "Android",
+  // Languages
+  "JavaScript", "TypeScript", "Python", "Java", "C", "C++", "C#", "Go",
+  "Rust", "PHP", "Ruby", "Kotlin", "Swift", "Dart", "R", "Scala",
+  "Shell/Bash", "MATLAB",
+  // Frontend
+  "React", "Angular", "Vue.js", "Next.js", "Nuxt.js", "Svelte",
+  "HTML5", "CSS3", "Tailwind CSS", "Bootstrap", "Material UI",
+  "SASS/SCSS", "jQuery", "Redux", "REST API", "GraphQL", "WebSocket",
+  // Backend
+  "Node.js", "Express.js", "Django", "Flask", "FastAPI", "Spring Boot",
+  "Laravel", "Ruby on Rails", "ASP.NET", "NestJS", ".NET", "Gin",
+  // Mobile
+  "Android Development", "iOS Development", "Flutter", "React Native",
+  "Ionic", "SwiftUI", "Kotlin Multiplatform",
+  // Database
+  "MongoDB", "PostgreSQL", "MySQL", "SQLite", "Redis", "Oracle DB",
+  "MS SQL Server", "Firebase", "DynamoDB", "Elasticsearch", "Cassandra",
+  "Supabase", "MariaDB",
+  // Cloud & DevOps
+  "AWS", "Azure", "GCP", "Docker", "Kubernetes", "Terraform", "Ansible",
+  "Jenkins", "GitHub Actions", "GitLab CI/CD", "Linux", "Nginx",
+  "Prometheus", "Grafana", "Shell Scripting",
+  // AI / ML / Data
+  "Machine Learning", "Deep Learning", "NLP", "Computer Vision",
+  "TensorFlow", "PyTorch", "Keras", "Scikit-learn", "OpenCV",
+  "Pandas", "NumPy", "Data Science", "Data Analysis",
+  "LangChain", "OpenAI API", "Power BI", "Tableau", "Spark",
+  // Tools
+  "Git", "GitHub", "GitLab", "Figma", "Adobe XD", "Postman",
+  "Jira", "Swagger", "VS Code",
+  // Security & Testing
+  "Cybersecurity", "Ethical Hacking", "Jest", "Selenium", "Cypress",
+  "Playwright", "OAuth", "JWT",
+  // Other
+  "Microservices", "Serverless", "WebRTC", "gRPC", "RabbitMQ",
+  "Apache Kafka", "Blockchain Development", "Smart Contracts",
+  "IoT", "Arduino",
 ];
 
 const JOB_TYPES = ["Full-time", "Part-time", "Contract", "Internship"] as const;
