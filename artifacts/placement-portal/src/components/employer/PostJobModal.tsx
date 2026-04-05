@@ -117,9 +117,9 @@ export default function PostJobModal({ open, onClose, companyName, verificationS
     },
     unverified: {
       icon: AlertCircle,
-      bg: "bg-red-50 border-red-200",
-      text: "text-red-800",
-      label: "Company is unverified. Please complete company verification before posting jobs.",
+      bg: "bg-orange-50 border-orange-200",
+      text: "text-orange-800",
+      label: "Your job will be posted with an Unverified badge. Verify your company CIN to upgrade to an Approved Job badge.",
     },
     rejected: {
       icon: AlertCircle,

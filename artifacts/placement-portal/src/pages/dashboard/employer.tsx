@@ -122,7 +122,6 @@ export default function EmployerDashboard() {
                 size="sm"
                 className="gap-2"
                 onClick={() => setPostJobModalOpen(true)}
-                disabled={!company.name}
                 data-testid="btn-post-job"
               >
                 <Plus className="h-4 w-4" /> Post a Job
