@@ -1,0 +1,122 @@
+Create a modern, responsive full-stack website for a project titled:
+
+"Online Placement Portal – Connecting Talent with Opportunity"
+
+The website should be inspired by a final-year BCA project and must align with Indian Government initiatives like Skill India and Digital India.
+
+🔹 GENERAL REQUIREMENTS:
+
+* Clean, modern UI with professional design
+* Fully responsive (mobile + desktop)
+* Use HTML, CSS, JavaScript for frontend and Python (Flask/Django) for backend
+* Use MySQL database
+* Include animations, icons, and interactive UI
+* Add authentication (login/register for students & employers)
+
+🔹 WEBSITE SECTIONS:
+
+1. 🏠 Home Page
+
+* Title: Online Placement Portal
+* Tagline: Connecting Talent with Opportunity
+* Brief intro about platform
+* Highlight Skill India & Digital India integration
+* CTA buttons: "Find Jobs" and "Post Jobs"
+
+2. 📖 About Project
+
+* Explain problem: traditional recruitment inefficiencies
+* Solution: AI-based placement system
+* Include objectives and goals
+* Add project team details
+
+3. ⚙️ System Architecture
+
+* Cloud infrastructure (AWS)
+* Microservices architecture
+* API-first approach
+* Data security (encryption, GDPR compliance)
+
+4. 💻 Technical Implementation
+
+* Frontend: HTML, CSS, JavaScript
+* Backend: Python
+* Database: MySQL
+* CI/CD pipeline explanation
+
+5. 🔄 Workflow / Methodology
+
+* User registration (students & employers)
+* Profile creation & resume upload
+* Job matching algorithm (AI-based)
+* Application tracking
+* Messaging system
+
+6. 🧠 Features
+
+* AI-based job recommendations
+* Resume upload & parsing
+* Employer dashboard
+* Candidate dashboard
+* Real-time notifications
+* Skill gap analysis
+* Predictive analytics
+
+7. 📊 Data & Analytics
+
+* Candidate data (skills, experience)
+* Employer data (job requirements)
+* Matching score system
+* Hiring metrics (time-to-hire, conversion rate)
+
+8. 🚀 Government Alignment
+
+* Skill India: skill development integration
+* Digital India: digital transformation & accessibility
+* Mention how platform supports employment generation
+
+9. 🖥️ Demo / Prototype Section
+
+* Screenshots or mock UI (dashboard, job listings, etc.)
+* Interactive preview (optional)
+
+10. 📈 Results & Conclusion
+
+* Improved hiring efficiency
+* Reduced recruitment cost
+* Better candidate-job matching
+
+11. 🔮 Future Scope
+
+* Global expansion
+* Multi-language support
+* AI improvements
+* Virtual interviews
+
+12. 📞 Contact Page
+
+* Contact form
+* Email, phone
+* Social links
+
+🔹 EXTRA FEATURES:
+
+* Role-based dashboards (Admin, Student, Employer)
+* Secure login system
+* Search & filter jobs
+* Notifications system
+
+🔹 DESIGN STYLE:
+
+* Use gradient backgrounds (blue/purple tech theme)
+* Cards, shadows, glassmorphism UI
+* Icons and illustrations
+
+🔹 OUTPUT:
+
+* Provide complete working code (frontend + backend)
+* Folder structure
+* Database schema
+* Setup instructions
+
+Make sure the content reflects the ideas from the project presentation including architecture, workflow, AI matching, and analytics.  
