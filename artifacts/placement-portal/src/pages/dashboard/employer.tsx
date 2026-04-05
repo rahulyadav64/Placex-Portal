@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
@@ -6,7 +6,7 @@ import {
   Briefcase, Bell, Users, CheckCircle2, Clock, XCircle,
   Plus, Building2, TrendingUp, ChevronRight, Eye, EyeOff,
   ShieldCheck, ShieldAlert, AlertCircle, MapPin, Calendar,
-  Mail, Phone, Globe, Trash2, Pause, Play, Edit3
+  Mail, Phone, Globe, Trash2, Pause, Play, Edit3, RefreshCw
 } from "lucide-react";
 import { useEmployerProfile } from "@/hooks/useEmployerProfile";
 import { getCompanyCompletion } from "@/lib/employer-profile";
@@ -23,12 +23,26 @@ const VERIFICATION_CONFIG = {
 export default function EmployerDashboard() {
   const {
     company, updateCompany, verifyCompany, verifying, verificationResult,
-    postedJobs, postJob, updateJob, deleteJob,
+    postedJobs, postJob, updateJob, deleteJob, syncJobStatuses,
   } = useEmployerProfile();
 
   const [activeTab, setActiveTab] = useState<"jobs" | "company" | "applicants">("jobs");
   const [companyModalOpen, setCompanyModalOpen] = useState(false);
   const [postJobModalOpen, setPostJobModalOpen] = useState(false);
+  const [syncing, setSyncing] = useState(false);
+
+  const handleSyncStatus = async () => {
+    setSyncing(true);
+    try { await syncJobStatuses(); } finally { setSyncing(false); }
+  };
+
+  // Auto-poll every 30 seconds when there are pending (non-approved) jobs
+  useEffect(() => {
+    const hasPending = postedJobs.some(j => !j.isApproved && j.status !== "Closed");
+    if (!hasPending) return;
+    const id = setInterval(() => { syncJobStatuses(); }, 30_000);
+    return () => clearInterval(id);
+  }, [postedJobs, syncJobStatuses]);
 
   const verCfg = VERIFICATION_CONFIG[company.verificationStatus];
   const VerIcon = verCfg.icon;
@@ -194,6 +208,26 @@ export default function EmployerDashboard() {
                 {/* Posted Jobs */}
                 {activeTab === "jobs" && (
                   <>
+                    {postedJobs.length > 0 && (
+                      <div className="flex items-center justify-between pb-1">
+                        <p className="text-xs text-muted-foreground">
+                          {postedJobs.some(j => !j.isApproved && j.status !== "Closed")
+                            ? "Auto-refreshing approval status every 30s"
+                            : "All jobs reviewed"}
+                        </p>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="gap-1.5 text-xs h-7"
+                          onClick={handleSyncStatus}
+                          disabled={syncing}
+                          data-testid="refresh-status-btn"
+                        >
+                          <RefreshCw className={`h-3.5 w-3.5 ${syncing ? "animate-spin" : ""}`} />
+                          {syncing ? "Checking..." : "Refresh Status"}
+                        </Button>
+                      </div>
+                    )}
                     {postedJobs.length === 0 ? (
                       <div className="text-center py-14 text-muted-foreground">
                         <Briefcase className="h-10 w-10 mx-auto mb-3 opacity-30" />

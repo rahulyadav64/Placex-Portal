@@ -1,9 +1,27 @@
 import { Router, type Request, type Response, type NextFunction, type IRouter } from "express";
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
 import { jobStore, saveStore, type PortalJob } from "./portal-jobs";
 
 const router: IRouter = Router();
 
-let currentAdminKey: string = process.env["ADMIN_KEY"] ?? "";
+const __dir = path.dirname(fileURLToPath(import.meta.url));
+const KEY_FILE = path.resolve(__dir, "../../.admin-key");
+
+function loadAdminKey(): string {
+  try {
+    const saved = fs.readFileSync(KEY_FILE, "utf-8").trim();
+    if (saved) return saved;
+  } catch {}
+  return process.env["ADMIN_KEY"] ?? "";
+}
+
+function saveAdminKey(key: string) {
+  try { fs.writeFileSync(KEY_FILE, key, "utf-8"); } catch {}
+}
+
+let currentAdminKey: string = loadAdminKey();
 
 function requireAdminKey(req: Request, res: Response, next: NextFunction): void {
   const key = req.headers["x-admin-key"] as string | undefined;
@@ -30,6 +48,7 @@ router.post("/admin/generate-key", (req, res) => {
   const segment = (len: number) => Array.from({ length: len }, () => chars[Math.floor(Math.random() * chars.length)]).join("");
   const newKey = `PLACEX-ADMIN-${segment(4)}-${segment(4)}-${segment(4)}`;
   currentAdminKey = newKey;
+  saveAdminKey(newKey);
   res.json({ newKey });
 });
 
@@ -65,6 +84,15 @@ router.post("/admin/jobs/:id/reject", (req, res) => {
     rejectionReason: reason || "Does not meet PlaceX quality standards.",
     updatedAt: new Date().toISOString(),
   };
+  jobStore.set(job.id, updated);
+  saveStore(jobStore);
+  res.json({ success: true, job: updated });
+});
+
+router.post("/admin/jobs/:id/revoke", (req, res) => {
+  const job = jobStore.get(req.params.id);
+  if (!job) { res.status(404).json({ error: "Job not found" }); return; }
+  const updated: PortalJob = { ...job, isApproved: false, rejectionReason: undefined, updatedAt: new Date().toISOString() };
   jobStore.set(job.id, updated);
   saveStore(jobStore);
   res.json({ success: true, job: updated });

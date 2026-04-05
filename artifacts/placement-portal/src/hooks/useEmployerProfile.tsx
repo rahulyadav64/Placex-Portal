@@ -42,11 +42,37 @@ export function useEmployerProfile() {
 
   // Listen for approval status changes synced from the API server
   useEffect(() => {
-    const onSynced = () => {
-      setPostedJobsState(loadPostedJobs());
-    };
+    const onSynced = () => { setPostedJobsState(loadPostedJobs()); };
     window.addEventListener("employer-jobs-synced", onSynced);
     return () => window.removeEventListener("employer-jobs-synced", onSynced);
+  }, []);
+
+  const syncJobStatuses = useCallback(async () => {
+    const jobs = loadPostedJobs();
+    const comp = loadCompany();
+    if (jobs.length === 0) return;
+    const results = await Promise.all(
+      jobs.map(async (job): Promise<PostedJob> => {
+        try {
+          const res = await fetch("/api/jobs/submit", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              ...job,
+              companyName: comp.name,
+              companyVerificationStatus: comp.verificationStatus,
+              hrEmail: comp.hrEmail,
+            }),
+          });
+          if (!res.ok) return job;
+          const data = await res.json() as { job?: PostedJob };
+          if (!data.job) return job;
+          return { ...job, isApproved: data.job.isApproved, status: data.job.status };
+        } catch { return job; }
+      })
+    );
+    savePostedJobs(results);
+    setPostedJobsState(results);
   }, []);
 
   const updateCompany = useCallback((updates: Partial<CompanyProfile>) => {
@@ -137,6 +163,6 @@ export function useEmployerProfile() {
 
   return {
     company, updateCompany, verifyCompany, verifying, verificationResult,
-    postedJobs, postJob, updateJob, deleteJob,
+    postedJobs, postJob, updateJob, deleteJob, syncJobStatuses,
   };
 }
