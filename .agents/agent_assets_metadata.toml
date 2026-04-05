@@ -11,3 +11,9 @@ id = "1x7A3ZLhSbg9Lg4V3ivmm"
 uri = "file://attached_assets/generated_images/placex-logo.png"
 type = "image"
 title = "PlaceX Logo"
+
+[[outputs]]
+id = "Q2nwPD9IY7uKN4BbBty7i"
+uri = "file://placex-source.tar.gz"
+type = "unspecified"
+title = "PlaceX — Full Source Code"
