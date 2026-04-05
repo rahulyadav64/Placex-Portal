@@ -29,7 +29,7 @@ export default function About() {
           </h2>
           <Card className="glass-card border-primary/20">
             <CardContent className="pt-6 text-lg text-muted-foreground leading-relaxed">
-              The Online Placement Portal is a comprehensive, AI-enhanced platform that automates and optimizes the placement workflow. By leveraging intelligent matching algorithms, we connect students with the right employers based on skills, academic performance, and career interests. The platform serves as a single source of truth for placement cells, students, and recruiters.
+              PlaceX is a comprehensive, AI-enhanced platform that automates and optimizes the placement workflow. By leveraging intelligent matching algorithms, we connect students with the right employers based on skills, academic performance, and career interests. The platform serves as a single source of truth for placement cells, students, and recruiters.
             </CardContent>
           </Card>
         </section>

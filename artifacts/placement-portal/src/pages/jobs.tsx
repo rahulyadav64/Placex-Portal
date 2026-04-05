@@ -7,11 +7,21 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import {
   Search, MapPin, IndianRupee, ChevronRight, Filter,
   Building2, ShieldCheck, Briefcase, ExternalLink, Users, Calendar,
-  Loader2, RefreshCw, Clock
+  Loader2, RefreshCw, Clock, Star, AlertCircle
 } from "lucide-react";
 import { governmentJobs as fallbackGovtJobs, type Job } from "@/lib/mock-data";
+import type { PostedJob } from "@/lib/employer-profile";
 
-type Category = "private" | "government";
+type Category = "private" | "government" | "portal";
+
+function loadPortalJobs(): PostedJob[] {
+  try {
+    const raw = localStorage.getItem("employer_jobs_v1");
+    return raw ? (JSON.parse(raw) as PostedJob[]).filter(j => j.status === "Active") : [];
+  } catch {
+    return [];
+  }
+}
 
 const API_BASE = "/api";
 const CACHE_KEY_PRIVATE = "jobs_private_cache";
@@ -62,6 +72,7 @@ export default function Jobs() {
 
   const [privateJobs, setPrivateJobs] = useState<Job[]>([]);
   const [govtJobs, setGovtJobs] = useState<Job[]>(fallbackGovtJobs);
+  const [portalJobs, setPortalJobs] = useState<PostedJob[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [fetchedAt, setFetchedAt] = useState<number | null>(null);
@@ -70,10 +81,16 @@ export default function Jobs() {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const cat = params.get("category");
-    if (cat === "government" || cat === "private") {
+    if (cat === "government" || cat === "private" || cat === "portal") {
       setCategory(cat);
     }
   }, []);
+
+  useEffect(() => {
+    if (category === "portal") {
+      setPortalJobs(loadPortalJobs());
+    }
+  }, [category]);
 
   const fetchPrivateJobs = useCallback(async (force = false) => {
     if (!force) {
@@ -140,7 +157,7 @@ export default function Jobs() {
     return () => clearInterval(interval);
   }, [fetchedAt, fetchPrivateJobs]);
 
-  const currentJobs: Job[] = category === "private" ? privateJobs : govtJobs;
+  const currentJobs: Job[] = category === "private" ? privateJobs : category === "government" ? govtJobs : [];
   const allLocations = ["all", ...Array.from(new Set(currentJobs.flatMap(j => j.location.split(" / "))))].slice(0, 20);
   const allTypes = ["all", ...Array.from(new Set(currentJobs.map(j => j.type)))];
 
@@ -150,6 +167,16 @@ export default function Jobs() {
       j.title.toLowerCase().includes(search.toLowerCase()) ||
       j.company.toLowerCase().includes(search.toLowerCase()) ||
       j.requiredSkills.some((s) => s.toLowerCase().includes(search.toLowerCase()));
+    const matchLocation = locationFilter === "all" || j.location.toLowerCase().includes(locationFilter.toLowerCase());
+    const matchType = typeFilter === "all" || j.type === typeFilter;
+    return matchSearch && matchLocation && matchType;
+  });
+
+  const filteredPortal = portalJobs.filter(j => {
+    const matchSearch =
+      !search ||
+      j.title.toLowerCase().includes(search.toLowerCase()) ||
+      j.requiredSkills.some(s => s.toLowerCase().includes(search.toLowerCase()));
     const matchLocation = locationFilter === "all" || j.location.toLowerCase().includes(locationFilter.toLowerCase());
     const matchType = typeFilter === "all" || j.type === typeFilter;
     return matchSearch && matchLocation && matchType;
@@ -201,6 +228,21 @@ export default function Jobs() {
                   {govtJobs.length}
                 </span>
               </button>
+              <button
+                onClick={() => { setCategory("portal"); setLocationFilter("all"); setTypeFilter("all"); setPortalJobs(loadPortalJobs()); }}
+                className={`flex items-center gap-2.5 px-6 py-3 rounded-xl text-sm font-semibold transition-all duration-250 ${
+                  category === "portal"
+                    ? "bg-violet-600 text-white shadow-md"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+                data-testid="tab-portal"
+              >
+                <Star className="h-4 w-4" />
+                PlaceX Jobs
+                <span className={`text-xs px-2 py-0.5 rounded-full font-bold ${category === "portal" ? "bg-white/20" : "bg-muted-foreground/15"}`}>
+                  {portalJobs.length}
+                </span>
+              </button>
             </div>
           </div>
 
@@ -209,6 +251,11 @@ export default function Jobs() {
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-amber-500/10 text-amber-700 text-sm font-medium mb-6 border border-amber-200">
               <ShieldCheck className="h-4 w-4" />
               Sourced from official Indian Government portals — SSC, UPSC, IBPS, ISRO, DRDO & more
+            </div>
+          ) : category === "portal" ? (
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-violet-500/10 text-violet-700 text-sm font-medium mb-6 border border-violet-200">
+              <Star className="h-4 w-4" />
+              Jobs posted directly by recruiters registered on PlaceX
             </div>
           ) : (
             <div className="flex flex-col items-center gap-2 mb-6">
@@ -306,7 +353,7 @@ export default function Jobs() {
           )}
 
           {/* Job count */}
-          {!loading && (
+          {!loading && category !== "portal" && (
             <div className="flex justify-between items-center mb-5">
               <p className="text-muted-foreground" data-testid="text-job-count">
                 Showing <span className="font-semibold text-foreground">{filtered.length}</span>{" "}
@@ -319,8 +366,23 @@ export default function Jobs() {
             </div>
           )}
 
-          {/* Job cards */}
-          {!loading && (
+          {/* Portal jobs count */}
+          {category === "portal" && (
+            <div className="flex justify-between items-center mb-5">
+              <p className="text-muted-foreground" data-testid="text-job-count">
+                Showing <span className="font-semibold text-foreground">{filteredPortal.length}</span> PlaceX recruiter jobs
+                {search && ` matching "${search}"`}
+              </p>
+              <Link href="/dashboard/employer">
+                <Button size="sm" variant="outline" className="gap-1.5 text-xs border-violet-300 text-violet-700 hover:bg-violet-50">
+                  <Star className="h-3 w-3" /> Post a Job
+                </Button>
+              </Link>
+            </div>
+          )}
+
+          {/* Job cards (private + government only) */}
+          {!loading && category !== "portal" && (
             <div className="grid gap-4">
               {filtered.map((job) => (
                 <div
@@ -466,12 +528,119 @@ export default function Jobs() {
             </div>
           )}
 
-          {!loading && filtered.length === 0 && (
+          {!loading && filtered.length === 0 && category !== "portal" && (
             <div className="text-center py-20 text-muted-foreground">
               <Briefcase className="h-12 w-12 mx-auto mb-4 opacity-30" />
               <p className="text-lg font-medium">No jobs found</p>
               <p className="text-sm">Try adjusting your search or filters</p>
             </div>
+          )}
+
+          {/* Portal Jobs */}
+          {category === "portal" && (
+            <>
+              {filteredPortal.length === 0 ? (
+                <div className="text-center py-20 text-muted-foreground">
+                  <Star className="h-12 w-12 mx-auto mb-4 opacity-30" />
+                  <p className="text-lg font-medium">No PlaceX jobs yet</p>
+                  <p className="text-sm mt-1 mb-5">Jobs posted by recruiters on this portal will appear here.</p>
+                  <Link href="/dashboard/employer">
+                    <Button className="gap-2 bg-violet-600 hover:bg-violet-700">
+                      <Star className="h-4 w-4" /> Register as Recruiter & Post Jobs
+                    </Button>
+                  </Link>
+                </div>
+              ) : (
+                <div className="grid gap-4">
+                  {filteredPortal.map(job => (
+                    <div
+                      key={job.id}
+                      className="glass-card rounded-2xl p-6 hover:-translate-y-0.5 transition-all duration-200 hover:shadow-lg group border-l-4 border-l-violet-500"
+                      data-testid={`card-portal-job-${job.id}`}
+                    >
+                      <div className="flex flex-col md:flex-row md:items-start gap-4">
+                        <div className="flex-shrink-0">
+                          <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-violet-500/10">
+                            <Building2 className="h-6 w-6 text-violet-600" />
+                          </div>
+                        </div>
+
+                        <div className="flex-1 min-w-0">
+                          <div className="flex flex-col md:flex-row md:items-center justify-between gap-2 mb-1.5">
+                            <h3 className="text-lg font-bold group-hover:text-violet-600 transition-colors leading-snug">
+                              {job.title}
+                            </h3>
+                            <div className="flex items-center gap-2 flex-shrink-0 flex-wrap">
+                              <Badge variant="secondary">{job.type}</Badge>
+                              {job.isApproved ? (
+                                <span className="flex items-center gap-1 text-xs font-bold px-2.5 py-1 rounded-full bg-green-100 text-green-700 border border-green-300">
+                                  <ShieldCheck className="h-3 w-3" /> Approved Job
+                                </span>
+                              ) : (
+                                <span className="flex items-center gap-1 text-xs px-2.5 py-1 rounded-full bg-orange-100 text-orange-700 border border-orange-300">
+                                  <AlertCircle className="h-3 w-3" /> Unverified
+                                </span>
+                              )}
+                            </div>
+                          </div>
+
+                          <p className="font-semibold mb-3 text-violet-600">Posted via PlaceX</p>
+
+                          <div className="flex flex-wrap gap-4 text-sm text-muted-foreground mb-3">
+                            <span className="flex items-center gap-1">
+                              <MapPin className="h-3.5 w-3.5" /> {job.location}
+                            </span>
+                            <span className="flex items-center gap-1">
+                              <IndianRupee className="h-3.5 w-3.5" /> {job.salary}
+                            </span>
+                            <span className="flex items-center gap-1">
+                              <Users className="h-3.5 w-3.5" /> {job.openings} opening{job.openings !== 1 ? "s" : ""}
+                            </span>
+                            <span className="flex items-center gap-1 text-red-500 font-medium">
+                              <Calendar className="h-3.5 w-3.5" /> Deadline: {new Date(job.deadline).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}
+                            </span>
+                          </div>
+
+                          {job.requiredSkills.length > 0 && (
+                            <div className="flex flex-wrap gap-2 mb-3">
+                              {job.requiredSkills.map(skill => (
+                                <span key={skill} className="px-2.5 py-0.5 text-xs rounded-full font-medium bg-violet-500/10 text-violet-700">
+                                  {skill}
+                                </span>
+                              ))}
+                            </div>
+                          )}
+
+                          <p className="text-sm text-muted-foreground mb-2 leading-relaxed line-clamp-2">{job.description}</p>
+
+                          <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                            <Star className="h-3 w-3 text-violet-500" />
+                            <span>Posted on PlaceX · {new Date(job.postedAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}</span>
+                          </div>
+                        </div>
+
+                        <div className="flex-shrink-0 flex flex-col gap-2">
+                          <Link href="/dashboard/student">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="gap-1.5 w-full border-violet-400 text-violet-700 hover:bg-violet-600 hover:text-white transition-colors"
+                            >
+                              Apply Now <ChevronRight className="h-3.5 w-3.5" />
+                            </Button>
+                          </Link>
+                          <Link href="/register">
+                            <Button size="sm" variant="ghost" className="gap-1 w-full text-xs">
+                              Save Job <ChevronRight className="h-3 w-3" />
+                            </Button>
+                          </Link>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </>
           )}
         </div>
       </section>

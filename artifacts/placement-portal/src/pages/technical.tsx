@@ -76,7 +76,7 @@ export default function Technical() {
           </div>
           <h1 className="text-4xl md:text-5xl font-bold mb-6 text-gradient">Under the Hood</h1>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-            A deep dive into the technologies, architecture decisions, and implementation details powering the Online Placement Portal.
+            A deep dive into the technologies, architecture decisions, and implementation details powering PlaceX.
           </p>
         </div>
       </section>

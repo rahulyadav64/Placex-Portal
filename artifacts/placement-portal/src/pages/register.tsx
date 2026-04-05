@@ -19,7 +19,7 @@ export default function Register() {
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center gap-2 text-2xl font-bold text-primary mb-4">
             <Briefcase className="h-7 w-7" />
-            <span className="text-gradient">Placement Portal</span>
+            <span className="text-gradient">PlaceX</span>
           </Link>
           <h1 className="text-2xl font-bold">Create your account</h1>
           <p className="text-muted-foreground mt-1">Join thousands of students and employers on the platform</p>

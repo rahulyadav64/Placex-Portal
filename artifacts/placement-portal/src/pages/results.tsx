@@ -30,7 +30,7 @@ export default function Results() {
           </div>
           <h1 className="text-4xl md:text-5xl font-bold mb-6 text-gradient">Measurable Impact</h1>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-            The Online Placement Portal has delivered significant, measurable improvements in hiring efficiency, cost reduction, and candidate satisfaction.
+            PlaceX has delivered significant, measurable improvements in hiring efficiency, cost reduction, and candidate satisfaction.
           </p>
         </div>
       </section>
@@ -60,7 +60,7 @@ export default function Results() {
               <BarChart3 className="h-6 w-6 text-primary" />
               Before vs After: Key Metrics Comparison
             </h2>
-            <p className="text-muted-foreground text-sm mb-8">Comparison of traditional hiring vs Online Placement Portal</p>
+            <p className="text-muted-foreground text-sm mb-8">Comparison of traditional hiring vs PlaceX</p>
             <ResponsiveContainer width="100%" height={300}>
               <BarChart data={beforeAfterData} layout="vertical">
                 <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />

@@ -40,7 +40,7 @@ export default function AdminDashboard() {
             </div>
             <div>
               <h1 className="text-2xl font-bold" data-testid="text-admin-title">Admin Dashboard</h1>
-              <p className="text-muted-foreground text-sm">Platform Management • Online Placement Portal</p>
+              <p className="text-muted-foreground text-sm">Platform Management • PlaceX</p>
             </div>
           </div>
           <Badge className="bg-green-500/10 text-green-600 border-green-200 border">All Systems Normal</Badge>

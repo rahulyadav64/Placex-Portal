@@ -26,7 +26,7 @@ export default function Demo() {
           </div>
           <h1 className="text-4xl md:text-5xl font-bold mb-6 text-gradient">See It in Action</h1>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto mb-8">
-            Explore how the Online Placement Portal looks and works for each type of user. Switch between views to see the different experiences.
+            Explore how PlaceX looks and works for each type of user. Switch between views to see the different experiences.
           </p>
           {/* View Switcher */}
           <div className="inline-flex bg-muted rounded-xl p-1 gap-1">

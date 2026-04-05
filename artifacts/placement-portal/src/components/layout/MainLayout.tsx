@@ -21,7 +21,7 @@ export default function MainLayout({ children }: { children: ReactNode }) {
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2 font-bold text-xl text-primary">
             <Briefcase className="h-6 w-6" />
-            <span className="text-gradient">Placement Portal</span>
+            <span className="text-gradient">PlaceX</span>
           </Link>
           
           <nav className="hidden md:flex items-center gap-6">
@@ -86,7 +86,7 @@ export default function MainLayout({ children }: { children: ReactNode }) {
           <div>
             <div className="flex items-center gap-2 font-bold text-xl text-primary mb-4">
               <Briefcase className="h-6 w-6" />
-              <span>Placement Portal</span>
+              <span>PlaceX</span>
             </div>
             <p className="text-sm text-muted-foreground">
               Connecting Talent with Opportunity. Aligned with Skill India & Digital India initiatives.
@@ -121,7 +121,7 @@ export default function MainLayout({ children }: { children: ReactNode }) {
           </div>
         </div>
         <div className="container mx-auto px-4 mt-12 pt-8 border-t text-center text-sm text-muted-foreground flex flex-col md:flex-row justify-between items-center">
-          <p>© 2024 Placement Portal BCA Project. All rights reserved.</p>
+          <p>© 2024 PlaceX — BCA Final Year Project. All rights reserved.</p>
           <div className="flex gap-4 mt-4 md:mt-0 font-semibold text-primary">
             <span>Skill India</span>
             <span>Digital India</span>

@@ -38,7 +38,7 @@ export default function Government() {
           </div>
           <h1 className="text-4xl md:text-5xl font-bold mb-6 text-gradient">Supporting India's Digital Mission</h1>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-            The Online Placement Portal is built in alignment with two of India's flagship government initiatives — Skill India and Digital India.
+            PlaceX is built in alignment with two of India's flagship government initiatives — Skill India and Digital India.
           </p>
         </div>
       </section>
