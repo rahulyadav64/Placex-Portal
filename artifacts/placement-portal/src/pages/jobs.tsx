@@ -32,7 +32,7 @@ async function fetchPortalJobsFromAPI(): Promise<PostedJob[]> {
 
 const API_BASE = "/api";
 const CACHE_KEY_PRIVATE = "jobs_private_cache";
-const CACHE_KEY_GOVT = "jobs_govt_cache";
+const CACHE_KEY_GOVT = "jobs_govt_cache_v2";
 const CACHE_TTL_MS = 12 * 60 * 60 * 1000;
 
 interface CachedData {
